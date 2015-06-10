@@ -20,13 +20,16 @@
 	bool empilha(Tpilha * ppilha,TElemento* Elemento){
 				   TElemento *paux;
 				   paux=ppilha->inicio;
+				   if(ppilha->inicio == NULL){
+                      printf("Inicio = NULL\n");
+                   }   
 				   Elemento->prox=paux;
 				   ppilha->inicio=Elemento;			     
    }  
  Tpilha* preparaempilha(Tpilha *ppilha,TElemento *Elemento, int quantidade){
  	int numero,cont,final,custo;  
 	for(cont=0;cont<quantidade;cont++){
-		printf("digite o ponto de  final  do elmento %d",cont+1);
+		printf("digite o ponto de  final  do elemento %d",cont+1);
 		scanf("%d",&final);
 		printf("digite o custo do caminho %d",cont+1);
 		scanf("%d",&custo);
@@ -34,9 +37,20 @@
 		Elemento->final=final;
 		Elemento->custo=custo;
 		empilha(ppilha,Elemento);
-		
+			
 	}
  }
+ Tpilha*   mostra(Tpilha *ppilha,int  quantidade){
+            int cont;
+            TElemento* Elemento;
+            Elemento=ppilha->inicio;
+            printf("inicio %d\n",ppilha->inicio->final);
+           while(Elemento!=NULL){
+		    printf("%d",Elemento->final);
+		    Elemento=Elemento->prox;
+          }   
+          printf("u");
+ }		   
   TElemento* desenfilera(Tpilha *ppilha){
   	     TElemento * paux;
   	     paux=ppilha->inicio;
@@ -52,6 +66,7 @@
    		ppilha->inicio=NULL;
    		ppilha->ultimo=NULL;
     	ppilha->quantidade=5;
+    	return ppilha;
    }
     void mostradesinpilhando(Tpilha *ppilha,int quantidade){
     	int cont;
@@ -64,29 +79,32 @@
  
    TElemento* buscamelhor(Tpilha *ppilha){
     TElemento *pauxbest,*pauxposit,*pauxtransfer;
-	pauxbest=ppilha->inicio;
+	pauxbest=ppilha->inicio; 
 	pauxposit=pauxbest->prox; 
     while(pauxposit!=NULL){
 	 if(pauxbest->custo>pauxposit->custo){
 	 	pauxbest=pauxposit;
-	 	printf("u");
 	 
-	 }	
-     pauxposit=pauxposit->prox;
-   }
-	 	 return pauxbest;
+	  }	
+      pauxposit=pauxposit->prox;
+      if(pauxposit==NULL){
+         printf("arquivo chegou ao fim");               
+      }
+      printf("u");
      }
+	 	 return pauxbest;
+    }
 	
    int main(){
    	int quantidade;
     Tpilha *ppilha;
    	TElemento *Elemento=allocaE();
-   	incializapilha(ppilha); 
+   	ppilha=incializapilha(ppilha); 
    	quantidade=3;
 	preparaempilha(ppilha,Elemento,quantidade);
+	mostra(ppilha,quantidade);
     Elemento=buscamelhor(ppilha);
 	printf("%d",Elemento->final);
-	return 0;
 	system("pause");
    }
    
