@@ -1,8 +1,17 @@
 #include<stdlib.h>
 #include<stdio.h>
-     struct TElemento{  
+   struct caminho{
+	     int cidade;
+	     caminho *prox;
+	};
+   struct pontcaminho{
+	   int quantidade;
+	   caminho *inicio;
+	   caminho *ultimo;
+	};
+	 struct TElemento{  
 	     int custo;
-	     pontcamainho *pfila;
+	     pontcaminho *pfila;
 	     int final;
 	     TElemento *prox;
 	};
@@ -11,29 +20,19 @@
 	   TElemento *inicio;
 	   TElemento *ultimo;
 	};
-	struct caminhov{
-		 int* caminho;
-		 int quantidepercorrida;
-	};
-	 struct caminho{
-	     int cidade;
-	     TElemento *prox;
-	};
-	 struct pontcaminho{
-	   int quantidade;
-	   Tno *inicio;
-	   Tno *ultimo;
-	};
+	
+     
+
 		
-	Tno* allocaNo(void){
-		Tno *Elemento;
-	    Elemento=(Tno*)malloc(sizeof(Tno));
+	caminho* allocacaminho(void){
+		caminho *Elemento;
+	    Elemento=(caminho*)malloc(sizeof(caminho));
 	    return Elemento;
 	}
 	
 	pontcaminho* enfilera(pontcaminho * pfila,caminho* No){
 				   int cont=0;
-				   caminho *paux=allocaE();
+				   caminho *paux=allocacaminho();
 				   paux=pfila->inicio;
 				   No->prox=paux;
 				   pfila->inicio=No;
@@ -42,13 +41,12 @@
   
    
  pontcaminho* preparaenfilera(pontcaminho *pfila,caminho *No, int numero){ 
-		No=allocaNo();
+		No=allocacaminho();
 		No->cidade=numero;
 		enfilera(pfila,No);
 		return pfila;	
 	}
- }
-  TNo* desenfilera(pontcaminho *pfila){
+  caminho* desenfilera(pontcaminho *pfila){
   	     caminho* paux;
   	     paux=pfila->inicio;
   	     pfila->inicio=paux->prox;   	     
@@ -70,8 +68,8 @@
   	   distancia[cont]=(int*)malloc(sizeof(int)); 	
 	}
   }
-    Tpilha* empilhapilhaexterna(Tpilha *ppilha,TElemento){
-    	            TElemento *paux,*Elemento;
+    Tpilha* empilhapilhaexterna(Tpilha *ppilha,TElemento *Elemento){
+    	            TElemento *paux;
 					paux=ppilha->inicio;
 					Elemento->prox=paux;
 					ppilha->inicio=Elemento;	
@@ -167,8 +165,19 @@
 	  }	
 	}
 	}
+	bool contempontofinal(int *final,int contpontofinal){
+		bool contem=false;
+		int cont=0;
+		while(final[cont]!=-1&&contem==false){
+		   if(final[cont]==contpontofinal){
+		   	contem=true;
+		   }	
+		   cont++;
+		}
+		      
+	}
 	
-   Elemento*	gerenciabuscamelhor(int *distancia,int quantidade){
+   TElemento*	gerenciabuscamelhor(int *distancia,int quantidade,int inicio,int *final){
    	    int contpontofinal,cont;
    	    int *valor;
    	    Tpilha *ppilha;
@@ -176,9 +185,11 @@
    	    ppilha=inicializapilha(ppilha);
    	    valor=(int*)malloc(2*sizeof(int));
 		for(contpontofinal=0;contpontofinal<quantidade;contpontofinal++){
-			valor[1]=distancia[contpontofinal];
-			valor[2]=contpontofinal;
-			ppilha=empilha(ppilha,valor);
+			if(contpontofinal!=inicio&&contempontofinal(final,contpontofinal)==false){
+			  valor[1]=distancia[contpontofinal];
+			  valor[2]=contpontofinal;
+			  ppilha=empilha(ppilha,valor);
+		    }
 		}
 			    	
 		  Elemento=buscamelhor(ppilha);
@@ -187,15 +198,15 @@
    
  int  avaliacaminho(pontcaminho *pfila){
     int cont=0;
-    Tno *paux;
+    caminho *paux;
    while(paux!=NULL){
-	  printf("%d\n",Elemento->cidade);
+	  printf("%d\n",paux->cidade);
 	  paux=paux->prox;
 	  cont++;
     }
  }
  bool caminhocontem(pontcaminho *pfila,int numero){
-     Tno *paux;
+     caminho *paux;
      bool contem=false;
 	 while(paux!=NULL&&contem==false){
 	     if(numero==paux->cidade)
@@ -205,7 +216,7 @@
      return contem;
  } 
  int ultimacidade(pontcaminho *pfila){
- 	Tno* paux,*ultimo;
+ 	caminho* paux,*ultimo;
  	while(paux!=NULL){
  	    if(paux->prox==NULL){
  	      ultimo=paux;	
@@ -215,24 +226,45 @@
     return ultimo->cidade; 
  }
  
- TElemento* encontraelemento(pontcaminho* pfila, int inicio){
-    TElemento *Elemento;    
-   if(inicio!=ultimacidade(pfila)){
-		     pontodepartida=ultimacidade(pfila);  
-		     Elemento=gerenciabuscamelhor(distancia[pontodepartida],quantidade);
+ TElemento* encontraelemento(pontcaminho *pfila,int inicio, int **distancia,int *final,int quantidade,int *pontodepartida){
+    TElemento *Elemento;  
+	
+   if(inicio!=ultimacidade(pfila)){  
+		     Elemento=gerenciabuscamelhor(distancia[inicio],quantidade, inicio,pontodepartida);
 	}
 	return Elemento;
   }
-TElemento* gerenciabfs(int quantidade,pontcaminho *pfila, int inicio,int **distancia){
-      int pontodepartida,cont,caminho *paux;
-      paux=(camainho*)malloc(sizeof(caminho));
+ pontofinal(TElemento *paux, int *pontodepartida){
+	int cont=0;
+	while(paux!=NULL){
+        pontodepartida=(int*)realloc(pontodepartida,sizeof(int));   
+		pontodepartida[cont]=ultimacidade(paux->pfila);
+		pontodepartida[cont+1]=-1;
+ 	    paux=paux->prox; 
+		cont++;      	
+	}
+ }
+ Tpilha* encontrapilha(Tpilha *ppilha,TElemento *Elemento,int inicio,int**distancia,int final, int quantidade,int **pontodepartida){ 
+        return empilhapilhaexterna(ppilha,encontraelemento(Elemento->pfila,inicio,distancia,final,quantidade,pontodepartida));
+ }
+TElemento* gerenciabfs(int quantidade, int inicio,int **distancia){
+      int *pontodepartida,cont;
+	  TElemento *paux;
+      int final;
+      final=inicio;
+      paux=(TElemento*)malloc(sizeof(TElemento));
       TElemento *Elemento;  
+      Elemento=(TElemento*)malloc(sizeof(TElemento));
       Tpilha *ppilha;
-      inicializapilha(ppilha)
-     while(avaliacaminho(pfila)<quantidade){
-        for(cont=0;cont<quantidade;cont++){
-		  ppilha=empilhapilhaexterna(ppilha,encontraelemento(pfila,inicio));
-          Elemento=gerenciabuscamelhor(distancia[inicio],quantidade); 
+      ppilha=inicializapilha(ppilha);
+      ppilha=
+      pontodepartida=(int*)malloc(2*sizeof(int));
+      paux=ppilha->inicio;
+     while(avaliacaminho(Elemento->pfila)<quantidade){
+     	pontofinal(paux,pontodepartida);
+        while(paux!=NULL){
+		  ppilha=encontrapilha(ppilha,Elemento,inicio,distancia,pontodepartida,quantidade);
+          paux=paux->prox;
 		}
 		Elemento=buscamelhor(ppilha)
 		paux->cidade=Elemento->final
@@ -252,8 +284,8 @@ TElemento* gerenciabfs(int quantidade,pontcaminho *pfila, int inicio,int **dista
 	paux=pfila->inicio;
     printf("digite o numero da cidade de inicio variando de 0 a 2");
     scanf("%d",&inicio);
+    gerenciabfs
     printf("u");
-    
    }
    
    
