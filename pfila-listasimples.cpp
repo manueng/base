@@ -1,10 +1,10 @@
 #include<stdlib.h>
 #include<stdio.h>
      struct TElemento{
-	     int numero;
+	     int cidade;
 	     TElemento *prox;
 	};
-	 struct TFila{
+	 struct pontcaminho{
 	   int quantidade;
 	   TElemento *inicio;
 	   TElemento *ultimo;
@@ -16,58 +16,65 @@
 	    return Elemento;
 	}
 	
-	bool enfilera(TFila * pfila,TElemento* Elemento){
+	pontcaminho* enfilera(pontcaminho * pfila,TElemento* Elemento){
 				   int cont=0;
 				   TElemento *paux=allocaE();
 				   paux=pfila->inicio;
 				   Elemento->prox=paux;
-				   pfila->inicio=Elemento;			     
+				   pfila->inicio=Elemento;
+				   return pfila;			     
    }
-   TElemento* consulta(TFila *pfila){
+  TElemento* consulta(pontcaminho *pfila){
     TElemento *Elemento;
 	if(pfila!=NULL){
 	  Elemento=pfila->inicio;
 	}else{
 	  Elemento=allocaE();	
-	  Elemento->numero=-1; 
+	  Elemento->cidade=-1; 
 	}
 	return Elemento; 
    		
   }
    
- TFila* preparaenfilera(TFila *pfila,TElemento *Elemento, int quantidade){
+ pontcaminho* preparaenfilera(pontcaminho *pfila,TElemento *Elemento, int quantidade){
  	int numero,cont;  
 	for(cont=0;cont<quantidade;cont++){
 	    printf("digite o numero %d:",cont+1);	
 		scanf("%d",&numero);
 		Elemento=allocaE();
-		Elemento->numero=numero;
+		Elemento->cidade=numero;
 		enfilera(pfila,Elemento);
 		
 	}
  }
-  TElemento* desenfilera(TFila *pfila){
+  TElemento* desenfilera(pontcaminho *pfila){
   	     TElemento * paux;
   	     paux=pfila->inicio;
   	     pfila->inicio=paux->prox;   	     
 		 return paux;
   } 
+   pontcaminho* inicializafila(){
+   	pontcaminho *pfila;
+   	pfila=(pontcaminho*)malloc(sizeof(pontcaminho));
+   	pfila->inicio=NULL;
+    pfila->quantidade=5;
+    return pfila;
+   }
    
    
    int main(){
    	int quantidade,cont=0;
-   	TFila *pfila;
+   	TElemento *paux;
+   	pontcaminho *pfila=inicializafila();
    	TElemento *Elemento=allocaE();
-   	pfila=(TFila*)malloc(sizeof(TFila));
-   	pfila->inicio=NULL;
-    pfila->ultimo=NULL;
-    pfila->quantidade=5;
-    printf("digite a quantidade de elemento que deseja incluir na fila");
-    scanf("%d",&quantidade);
+   	printf("digite a quantidade de numeros");
+   	scanf("%d",&quantidade);
 	preparaenfilera(pfila,Elemento,quantidade);
-	for(cont=0;cont<quantidade;cont++){
+	paux=pfila->inicio;
+	while(paux!=NULL){
 	  Elemento=desenfilera(pfila);
-	  printf("%d\n",Elemento->numero);
+	  printf("%d\n",Elemento->cidade);
+	  paux=paux->prox;
     }
 	return 0;
 	system("pause");
