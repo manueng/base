@@ -16,7 +16,6 @@
 	     TElemento *prox;
 	};
 	 struct Tpilha{
-	   int quantidade;
 	   TElemento *inicio;
 	   TElemento *ultimo;
 	};
@@ -30,7 +29,7 @@
 	    return Elemento;
 	}
 	
-	pontcaminho* enfilera(pontcaminho * pfila,caminho* No){
+	pontcaminho* enfilera(pontcaminho * pfila,caminho *No){
 				   int cont=0;
 				   caminho *paux=allocacaminho();
 				   paux=pfila->inicio;
@@ -104,15 +103,11 @@
   	     //free(paux);	     
 		 return ppilha;
   } 
-  Tpilha* allocamais(Tpilha *ppilha){
-   	   ppilha->quantidade+1;  
-   }
    
    Tpilha*  inicializapilha(Tpilha *ppilha){
    		ppilha=(Tpilha*)malloc(sizeof(Tpilha));
    		ppilha->inicio=NULL;
    		ppilha->ultimo=NULL;
-    	ppilha->quantidade=5;
     	return ppilha;
    }
     void mostradesempilhando(Tpilha *ppilha,int quantidade){
@@ -167,7 +162,7 @@
 	}
 	bool contempontofinal(int *final,int contpontofinal){
 		bool contem=false;
-		int cont=0;
+		int cont=0;	
 		while(final[cont]!=-1&&contem==false){
 		   if(final[cont]==contpontofinal){
 		   	contem=true;
@@ -178,9 +173,14 @@
 	}
 	
    TElemento*	gerenciabuscamelhor(int *distancia,int quantidade,int inicio,int *final){
-   	    int contpontofinal,cont;
+   	    
+		int contpontofinal,cont;
    	    int *valor;
    	    Tpilha *ppilha;
+   	    ppilha=(Tpilha*)malloc(sizeof(Tpilha));
+   		ppilha->inicio=NULL;
+   		ppilha->ultimo=NULL;
+   	    printf("u");
    	    TElemento *Elemento;
    	    ppilha=inicializapilha(ppilha);
    	    valor=(int*)malloc(2*sizeof(int));
@@ -217,36 +217,70 @@
  } 
  int ultimacidade(pontcaminho *pfila){
  	caminho* paux,*ultimo;
+ 	paux=pfila->inicio;
  	while(paux!=NULL){
  	    if(paux->prox==NULL){
  	      ultimo=paux;	
 		}
 		paux=paux->prox;
 	 }
+	 
     return ultimo->cidade; 
  }
  
- TElemento* encontraelemento(pontcaminho *pfila,int inicio, int **distancia,int *final,int quantidade,int *pontodepartida){
-    TElemento *Elemento;  
-	
-   if(inicio!=ultimacidade(pfila)){  
+ TElemento* encontraelemento(pontcaminho* pfila,int inicio, int **distancia,int quantidade,int *pontodepartida){
+    TElemento *Elemento;
+
+   if(inicio!=ultimacidade(pfila)){
+               
 		     Elemento=gerenciabuscamelhor(distancia[inicio],quantidade, inicio,pontodepartida);
 	}
 	return Elemento;
   }
- pontofinal(TElemento *paux, int *pontodepartida){
+  int* encontrapontodepartida(TElemento *paux, int *pontodepartida){
 	int cont=0;
-	while(paux!=NULL){
-        pontodepartida=(int*)realloc(pontodepartida,sizeof(int));   
-		pontodepartida[cont]=ultimacidade(paux->pfila);
-		pontodepartida[cont+1]=-1;
- 	    paux=paux->prox; 
-		cont++;      	
+	  while(paux!=NULL){
+	  	if(paux->pfila->inicio!=NULL){
+          pontodepartida=(int*)realloc(pontodepartida,sizeof(int));   
+		  pontodepartida[cont]=ultimacidade(paux->pfila);
+		  pontodepartida[cont+1]=-1;
+ 	      paux=paux->prox; 
+		  cont++; 
+	    }
 	}
+	return pontodepartida;
  }
- Tpilha* encontrapilha(Tpilha *ppilha,TElemento *Elemento,int inicio,int**distancia,int final, int quantidade,int **pontodepartida){ 
-        return empilhapilhaexterna(ppilha,encontraelemento(Elemento->pfila,inicio,distancia,final,quantidade,pontodepartida));
+ Tpilha* encontrapilha(Tpilha *ppilha,TElemento *Elemento,int inicio,int**distancia, int quantidade,int *pontodepartida){ 
+        return empilhapilhaexterna(ppilha,encontraelemento(Elemento->pfila,inicio,distancia,quantidade,pontodepartida));
  }
+ 
+  caminho* setaNo(int pontofinal){
+  	   caminho* no;
+  	   no=(caminho*)malloc(sizeof(caminho));
+  	   no->cidade=pontofinal;
+  	   return no;
+  }
+ TElemento* encontraElemento(TElemento* paux,Tpilha *ppilha,int inicio, int **distancia, int quantidade,int *pontodepartida){
+	Tpilha *puaxpilha;
+	puaxpilha=(Tpilha*)malloc(sizeof(Tpilha));
+	ppilha=inicializapilha(ppilha);
+	TElemento *Elemento;
+	Elemento=(TElemento*)malloc(sizeof(TElemento));
+	Elemento->pfila->inicio=NULL;
+    ppilha=encontrapilha(ppilha,Elemento,inicio,distancia,quantidade,pontodepartida);
+   while(avaliacaminho(Elemento->pfila)<quantidade-2){
+     	pontodepartida=encontrapontodepartida(paux,pontodepartida);
+        while(paux!=NULL){
+		  ppilha=encontrapilha(ppilha,Elemento,inicio,distancia,quantidade,pontodepartida);
+          paux=paux->prox;
+          
+		}
+		Elemento=buscamelhor(ppilha);
+        Elemento->pfila=enfilera(Elemento->pfila,setaNo(Elemento->final));
+		ppilha=empilhapilhaexterna(ppilha,Elemento); 	   
+   }
+   return Elemento;
+}
 TElemento* gerenciabfs(int quantidade, int inicio,int **distancia){
       int *pontodepartida,cont;
 	  TElemento *paux;
@@ -256,36 +290,27 @@ TElemento* gerenciabfs(int quantidade, int inicio,int **distancia){
       TElemento *Elemento;  
       Elemento=(TElemento*)malloc(sizeof(TElemento));
       Tpilha *ppilha;
-      ppilha=inicializapilha(ppilha);
-      ppilha=
       pontodepartida=(int*)malloc(2*sizeof(int));
       paux=ppilha->inicio;
-     while(avaliacaminho(Elemento->pfila)<quantidade){
-     	pontofinal(paux,pontodepartida);
-        while(paux!=NULL){
-		  ppilha=encontrapilha(ppilha,Elemento,inicio,distancia,pontodepartida,quantidade);
-          paux=paux->prox;
-		}
-		Elemento=buscamelhor(ppilha)
-		paux->cidade=Elemento->final
-        Elemento->pfila=enfilera(Elemento->pfila,paux); 	   
-   }
-}
+	  paux=NULL;
+      pontodepartida=encontrapontodepartida(paux,pontodepartida);
+      return encontraElemento(paux,ppilha, inicio,distancia, quantidade,pontodepartida);
+    }
    int main(){
    	int **distancia;
    	int  *distancia2; 
    	int inicio=0;
-    int quantidade=3;// para adpatar deve-se setar quantidade para  27;
+    int quantidade=3;// para adaptar deve-se setar quantidade para  27;
     distancia=geradados(quantidade);
-    int quantidade,cont=0;
+    int cont=0;
    	TElemento *paux;
    	pontcaminho *pfila=inicializafila();
-   	TElemento *Elemento=allocaE();
-	paux=pfila->inicio;
+   	TElemento *Elemento;
+	Elemento=(TElemento*)malloc(1*sizeof(TElemento));
+//	paux->pfila->=pfila->inicio;
     printf("digite o numero da cidade de inicio variando de 0 a 2");
     scanf("%d",&inicio);
-    gerenciabfs
-    printf("u");
+    gerenciabfs( quantidade, inicio,distancia);
    }
    
    
