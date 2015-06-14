@@ -131,7 +131,6 @@
       if(pauxposit==NULL){
          printf("arquivo chegou ao fim");               
       }
-      printf("u");
      }
 	 	 return pauxbest;
     }
@@ -177,13 +176,12 @@
 		int contpontofinal,cont;
    	    int *valor;
    	    Tpilha *ppilha;
-   	    ppilha=(Tpilha*)malloc(sizeof(Tpilha));
+   	    //ppilha=(Tpilha*)malloc(sizeof(Tpilha));
    		ppilha->inicio=NULL;
    		ppilha->ultimo=NULL;
-   	    printf("u");
-   	    TElemento *Elemento;
-   	    ppilha=inicializapilha(ppilha);
+   	    TElemento *Elemento;	
    	    valor=(int*)malloc(2*sizeof(int));
+   	    printf("u");
 		for(contpontofinal=0;contpontofinal<quantidade;contpontofinal++){
 			if(contpontofinal!=inicio&&contempontofinal(final,contpontofinal)==false){
 			  valor[1]=distancia[contpontofinal];
@@ -193,7 +191,9 @@
 		}
 			    	
 		  Elemento=buscamelhor(ppilha);
-		return Elemento;	   
+	
+		return Elemento;	
+		   
     }
    
  int  avaliacaminho(pontcaminho *pfila){
